@@ -1,0 +1,46 @@
+For this problem, I created two structs: TeamFormation and Field. 
+I also created one enumeration (enum), Sport. Sport is meant to represent
+each sport (BASEBALL, FOOTBALL, RUGBY). There is also a Sport called NONE
+to represent when there is no sport playing on the field. TeamFormation 
+takes care of the players from a specific sport that are on each field. 
+TeamFormation has four relevant fields: a Sport, a lock, a conditional 
+variable, and an integer that represents the number of people on the team. 
+The conditional variable and lock are used for mutual exclusion, the count 
+variable is used to ensure that the correct number of people are on the 
+field at once, and the Sport is used to represent the sport that the team 
+belongs to. FieldState takes care of all of the players that are currently 
+playing and also controls the sport that is currently on the field. The
+fields in FieldState are a lock and conditional variable, current_sport,
+which represents the sport that is currently playing, and players_on_field,
+which represents that number of players on the fiels at the moment.
+
+To keep track of the total number of players for each sport and the
+minimum and maximum number of rugby players required, I maintained
+global constants.
+
+I also have a total of five helper functions: field_entry_attempt(),
+leave_field(), baseball_player(), football_player(), and rugby_player().
+
+Each of the "_player()" functions are meant to control the individual players
+from each sport. The baseball_player() and football_player() functions
+work almost the exact same way. It loops twice to ensure that every player
+can play a double header. Within the loop, the sports team's lock is locked
+and the team waits until there are enough people on the team to play a game.
+Once there are, the team goes onto the field and sleeps to simulate playing the game.
+Afterwards, they all leave the field. With rugby_player(), the loop is the same as it 
+was for the other player functions. However, within the loop, the rugby team will
+only go on the field if there are between 2 and 30 players and the number of
+players on the team is even.
+
+The field_entry_attempt() function takes in a sport and forces the field to wait
+until there is a new sport on the field or the sport that is on the field is the
+sport that has been passed to the function. After one of these conditions is 
+fulfilled, if the current sport on the field is NONE, the current sport will be changed
+to the sport that was passed into the function and sends a broadcast to the field
+to wake up all sleeping threads. The players on the field will then be incremented. During
+the implementation of the function, the field is locked.
+
+The leave_field() function takes in a sport and decrements the number of players on the
+field. Once there are no more players left, the current sport of the field will be set 
+to NONE and the field will receive a broadcast to wake all sleeping threads. During 
+the implementation of this function, the field is locked.
